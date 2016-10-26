@@ -1,9 +1,64 @@
 #!/usr/bin/with-contenv bash
 
-# install app
-[[ ! -d /app/headphones/.git ]] && \
-	git clone https://github.com/rembo10/headphones.git /app/headphones
+#Dont really need these here now, but you never know
+if [ -z "${CONFIG}" ]
+then
+    CONFIG="/config"
+fi
 
-# permissions
-chown -R abc:abc \
-	/app
+if [ -z "${APP_ROOT}" ]
+then
+    APP_ROOT="/app"
+fi
+
+if [ -z "${APPDIRNAME}" ]
+then
+    APPDIRNAME="headphones"
+fi
+
+if [ -z "${GITURL}" ]
+then
+    GITURL="https://github.com/rembo10/headphones.git"
+fi
+
+if [ -z "${GITBRANCH}" ]
+then
+    GITBRANCH="develop"
+fi
+
+if [ -z "${APP_EXEC}" ]
+then
+    APP_EXEC="Headphones.py"
+fi
+
+if [ -z "${APP_OPTS}" ]
+then
+    APP_OPTS="-p 8181 --datadir=${CONFIG}"
+fi
+
+if [ -z "${APP_COMP}" ]
+then
+    APP_COMP="python"
+fi
+
+####ALL user vars set up and checked now, I think.....
+
+# create folders
+mkdir -p "$APP_ROOT"
+mkdir -p "$CONFIG"
+#maybe should do /mnt and newgroup /folders, but too tired
+
+# install app
+if [[ -d "$APP_ROOT/$APPDIRNAME/.git" ]]
+then
+    cd "$APP_ROOT/$APPDIRNAME"
+    git stash
+    git checkout $GITBRANCH
+    git pull
+else
+    git clone $GITURL "$APP_ROOT/$APPDIRNAME" -b $GITBRANCH
+fi
+
+# permissions
+chown -R abc:abc "$APP_ROOT"
+chown -R abc:abc "$CONFIG"
