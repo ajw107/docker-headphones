@@ -1,10 +1,23 @@
 FROM lsiobase/alpine.python
-MAINTAINER smdion <me@seandion.com> ,sparklyballs
+MAINTAINER smdion <me@seandion.com> ,sparklyballs, ajw107 (Alex Wood)
+# environment settings
+ENV CONFIG="/config"
+ENV APP_ROOT="/app"
+ENV APPDIRNAME="headphones"
+ENV GITURL="https://github.com/rembo10/headphones.git"
+ENV GITBRANCH="develop"
+ENV APP_EXEC="Headphones.py"
+ENV APP_OPTS="-p 8181 --datadir=${CONFIG}"
+ENV APP_COMP="python"
+
+#make life easy for yourself
+ENV TERM=xterm-color
 
 # install packages
 RUN \
  apk add --no-cache \
 	ffmpeg \
+	nano \
 	mc
 
 # install build packages
@@ -41,7 +54,8 @@ RUN \
 
 # add local files
 COPY root/ /
+RUN chmod +x /usr/bin/ll
 
 # ports and volumes
 EXPOSE 8181
-VOLUME /config /downloads /music
+VOLUME "${CONFIG}" /mnt
